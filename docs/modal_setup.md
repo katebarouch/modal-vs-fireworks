@@ -11,15 +11,6 @@
 pip install modal
 ```
 
-**Note for Conda users**: If you're using conda/miniconda, you may need to install in the correct environment:
-```bash
-# Check which python you're using
-which python
-
-# If using conda, install directly with conda's pip
-/path/to/your/conda/bin/pip install modal openai
-```
-
 ### 2. Create Modal Account
 1. Go to [modal.com](https://modal.com) and sign up
 2. Verify your email address
