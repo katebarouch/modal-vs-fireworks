@@ -35,10 +35,10 @@ download_image = modal.Image.debian_slim().pip_install([
     gpu="A10G",  # Use A10G GPU for Llama inference
     volumes={"/cache": modal_cache},  # Mount persistent volume at /cache to store downloaded models across runs
     timeout=600,
-    scaledown_window=300,  # Updated parameter name
+    scaledown_window=300,  
 )
 @modal.concurrent(max_inputs=10)
-def generate_text(prompt: str, max_tokens: int = 150, is_first_call: bool = False) -> Dict[str, Any]:
+def generate_text(prompt: str, max_tokens: int = 150) -> Dict[str, Any]:
     """
     Generate text using Llama model via Modal.
     """
@@ -53,8 +53,10 @@ def generate_text(prompt: str, max_tokens: int = 150, is_first_call: bool = Fals
     model_name = "huggyllama/llama-7b" 
     cache_dir = "/cache"  # Use Modal volume for caching
     
+    # Start timing the actual model loading
     init_start = time.time()
-    # Models are cached in the volume, so they only download once
+
+    # define the tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir, use_fast=True)
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
@@ -63,6 +65,10 @@ def generate_text(prompt: str, max_tokens: int = 150, is_first_call: bool = Fals
         device_map="auto",   # puts weights on the GPU
     )
     model.eval()
+
+    # Enable TensorFloat-32 (TF32) math on NVIDIA Ampere+ GPUs (like A10G)
+    # This allows certain FP32 matrix multiplications to run on Tensor Cores,
+    # giving up to ~2x faster inference with negligible accuracy loss.
     torch.backends.cuda.matmul.allow_tf32 = True
     
     # Start timing the actual inference
@@ -76,10 +82,10 @@ def generate_text(prompt: str, max_tokens: int = 150, is_first_call: bool = Fals
     with torch.no_grad():
         outputs = model.generate(
             **inputs,
-            max_new_tokens=max_tokens,
-            do_sample=True,
-            temperature=0.7,
-            pad_token_id=tokenizer.eos_token_id,
+            max_new_tokens=max_tokens, # Prevents runaway generation.
+            do_sample=True, # Prevents deterministic output.
+            temperature=0.7, # Controls randomness of output.
+            pad_token_id=tokenizer.eos_token_id, ## Use EOS token as padding to avoid warnings for models like LLaMA
         )
     
     # Decode response
@@ -101,7 +107,6 @@ def generate_text(prompt: str, max_tokens: int = 150, is_first_call: bool = Fals
         "init_time": init_time,           # Model loading time
         "inference_time": inference_time, # Pure inference time
         "total_time": total_time,        # Total function time
-        "is_cold_start": is_first_call,  # Cold start indicator
         "model": "microsoft/DialoGPT-medium",
         "usage": {
             "prompt_tokens": input_tokens,
@@ -124,30 +129,22 @@ def main():
     # First call (cold start measurement - Modal container + model loading)
     print("\n Cold Start Test (Modal Container + Model Loading)")
     print(f"Prompt: {prompt1}")
-    cold_start_time = time.time()
-    result1 = generate_text.remote(prompt1, is_first_call=True)
-    cold_end_time = time.time()
+    result1 = generate_text.remote(prompt1)
     
     print(f"Response: {result1['response'][:100]}...")
     print(f"Model init time: {result1['init_time']:.2f}s")
     print(f"Inference time: {result1['inference_time']:.2f}s")
     print(f"Function time: {result1['total_time']:.2f}s")
-    print(f"End-to-end time: {cold_end_time - cold_start_time:.2f}s")
-    print(f"Cold start: {result1['is_cold_start']}")
     
     # Second call (warm start measurement - model already loaded)
     print("\n Warm Start Test (Model Already Loaded)")
     print(f"Prompt: {prompt2}")
-    warm_start_time = time.time()
-    result2 = generate_text.remote(prompt2, is_first_call=False)
-    warm_end_time = time.time()
+    result2 = generate_text.remote(prompt2)
     
     print(f"Response: {result2['response'][:100]}...")
     print(f"Model init time: {result2['init_time']:.2f}s")
     print(f"Inference time: {result2['inference_time']:.2f}s")
     print(f"Function time: {result2['total_time']:.2f}s")
-    print(f"End-to-end time: {warm_end_time - warm_start_time:.2f}s")
-    print(f"Cold start: {result2['is_cold_start']}")
     
     # Use second result for cost calculation
     print(f"\nTokens used: {result2['usage']['total_tokens']} ({result2['usage']['prompt_tokens']} prompt + {result2['usage']['completion_tokens']} completion)")
