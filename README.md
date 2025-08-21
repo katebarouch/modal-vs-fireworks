@@ -44,10 +44,10 @@ cd modal-vs-fireworks
 3. Run the examples:
 ```bash
 # Modal
-modal run modal/simple_chat.py
+modal run modal/modal_simple_chat.py
 
 # Fireworks
-python fireworks/simple_chat.py
+python fireworks/fireworks_simple_chat.py
 ```
 
 ## Results Summary
