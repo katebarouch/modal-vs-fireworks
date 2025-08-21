@@ -45,5 +45,5 @@ For example:
 
 3. **Test your setup:**
 ```bash
-python fireworks/simple_chat.py
+python fireworks/fireworks_simple_chat.py
 ```

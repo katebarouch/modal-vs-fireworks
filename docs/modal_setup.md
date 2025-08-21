@@ -35,16 +35,7 @@ Token is connected to the [your-username] workspace.
 Token verified successfully!
 ```
 
-### 4. Create API Key Secrets
-Modal runs in isolated containers, so API keys must be stored as Modal secrets:
-
+### 4. Test Your Setup
 ```bash
-# Create OpenAI secret (replace with your actual API key)
-modal secret create openai-secret OPENAI_API_KEY="sk-proj-your-key-here"
-```
-
-### 5. Test Your Setup
-```bash
-cd modal/
-modal run simple_chat.py
+modal run modal/modal_simple_chat.py
 ```

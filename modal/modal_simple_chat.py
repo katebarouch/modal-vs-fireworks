@@ -134,7 +134,7 @@ def main():
     print(f"Response: {result1['response'][:100]}...")
     print(f"Model init time: {result1['init_time']:.2f}s")
     print(f"Inference time: {result1['inference_time']:.2f}s")
-    print(f"Function time: {result1['total_time']:.2f}s")
+    print(f"Total time: {result1['total_time']:.2f}s")
     
     # Second call (warm start measurement - model already loaded)
     print("\n Warm Start Test (Model Already Loaded)")
@@ -144,7 +144,7 @@ def main():
     print(f"Response: {result2['response'][:100]}...")
     print(f"Model init time: {result2['init_time']:.2f}s")
     print(f"Inference time: {result2['inference_time']:.2f}s")
-    print(f"Function time: {result2['total_time']:.2f}s")
+    print(f"Total time: {result2['total_time']:.2f}s")
     
     # Use second result for cost calculation
     print(f"\nTokens used: {result2['usage']['total_tokens']} ({result2['usage']['prompt_tokens']} prompt + {result2['usage']['completion_tokens']} completion)")

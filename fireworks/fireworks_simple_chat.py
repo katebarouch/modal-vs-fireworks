@@ -8,7 +8,7 @@ import time
 import requests
 import json
 
-def generate_text(prompt, max_tokens=150, is_first_call=False):
+def generate_text(prompt, max_tokens=150):
     """Generate text using Fireworks AI custom deployment."""
     function_start = time.time()
     
@@ -18,7 +18,7 @@ def generate_text(prompt, max_tokens=150, is_first_call=False):
         raise ValueError("FIREWORKS_API_KEY environment variable is required")
         
     # Start timing the actual API request
-    request_start = time.time()
+    inference_start = time.time()
 
     url = "https://api.fireworks.ai/inference/v1/chat/completions"
     payload = {
@@ -49,11 +49,11 @@ def generate_text(prompt, max_tokens=150, is_first_call=False):
     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
     # get the time it took to get the response
-    request_end = time.time()
+    inference_end = time.time()
     
     # Calculate timing metrics
-    request_latency = request_end - request_start  # Pure latency
-    total_time = request_end - function_start      # Total time
+    init_time = function_start - inference_start
+    inference_time = inference_end - inference_start
             
     # parse response
     response_data = response.json()
@@ -68,9 +68,9 @@ def generate_text(prompt, max_tokens=150, is_first_call=False):
     # return response
     return {
         "response": response_text,
-        "request_latency": request_latency,  # Pure API request time
-        "total_time": total_time,           # Total function time
-        "is_cold_start": is_first_call,     # Cold start indicator
+        "init_time": init_time,
+        "inference_time": inference_time,
+        "total_time": total_time,
         "usage": {
             "prompt_tokens": response_data['usage']['prompt_tokens'],
             "completion_tokens": response_data['usage']['completion_tokens'],
@@ -97,20 +97,20 @@ def main():
     # First call (cold start measurement)
     print("\n Cold Start Test")
     print(f"Prompt: {prompt1}")
-    result1 = generate_text(prompt1, is_first_call=True)
+    result1 = generate_text(prompt1)
     print(f"Response: {result1['response'][:100]}...")
-    print(f"Request latency: {result1['request_latency']:.2f}s")
+    print(f"Init time: {result1['init_time']:.2f}s")
+    print(f"Inference time: {result1['inference_time']:.2f}s")
     print(f"Total time: {result1['total_time']:.2f}s")
-    print(f"Cold start: {result1['is_cold_start']}")
     
     # Second call (warm start measurement)
     print("\n Warm Start Test")
     print(f"Prompt: {prompt2}")
-    result2 = generate_text(prompt2, is_first_call=False)
+    result2 = generate_text(prompt2)
     print(f"Response: {result2['response'][:100]}...")
-    print(f"Request latency: {result2['request_latency']:.2f}s")
+    print(f"Init time: {result2['init_time']:.2f}s")
+    print(f"Inference time: {result2['inference_time']:.2f}s")
     print(f"Total time: {result2['total_time']:.2f}s")
-    print(f"Cold start: {result2['is_cold_start']}")
     
     # Use second result for cost calculation
     result = result2
