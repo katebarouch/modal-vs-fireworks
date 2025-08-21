@@ -58,7 +58,7 @@ python fireworks/fireworks_simple_chat.py
 | Cold Start | 9.31s | 2.44s (no cold start) | **Fireworks** |
 | Warm Start | 3.53s | 2.04s | **Fireworks** |
 | Inference Time | 6.11s | 2.24s | **Fireworks** |
-| Cost per Call | $0.002658 (GPU time) | $0.012 (170 tokens) | **Fireworks** |
+| Cost per Call | $0.002658 (GPU time) | $0.012 (170 tokens) | **Modal** |
 | Ease of Use | Complex (model management) | Simple (API calls) | **Fireworks** |
 
 ### A Note on Chat-GPTModel Selection & Comparison Strategy 
