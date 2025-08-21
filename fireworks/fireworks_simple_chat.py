@@ -116,8 +116,7 @@ def main():
     print(f"Estimated cost: ${estimated_cost:.4f}")
 
     # Cost estimation (approximate rates for on-demand deployment)
-    estimated_cost = result['usage']['total_tokens'] * (0.20 / 1_000_000)  # = total_tokens * 0.0000002  # Rough estimate based on $0.20 Per 1M Tokensfor this model(as of 2025-08-21)
-    print(f"Estimated cost: ${estimated_cost:.10f}")
+    # estimated_cost = need to look up pricing further
 
 if __name__ == "__main__":
     main()
