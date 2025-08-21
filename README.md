@@ -14,14 +14,12 @@ To compare two popular AI inference platforms by running the same simple LLM tas
 ```
 ├── modal/
 │   ├── simple_chat.py          # Basic chat completion example using llama on Modal
-│   └── requirements.txt        # Dependencies
 ├── fireworks/
 │   ├── simple_chat.py          # Basic chat completion example using llama on Fireworks
-│   └── requirements.txt        # Dependencies
 ├── docs/
 │   ├── modal_setup.md          # Modal setup instructions
 │   └── fireworks_setup.md      # Fireworks setup instructions
-└── README.md                   # This file
+└── README.md                   
 ```
 
 ### Prerequisites
