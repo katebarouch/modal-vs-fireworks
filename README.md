@@ -53,15 +53,18 @@ python fireworks/fireworks_simple_chat.py
 ## Results Summary
 
 
-| Metric | Modal + Llama 7B | Fireworks + Llama 3.1 8B | Winner |
-|--------|------------------|---------------------------|--------|
-| Cold Start | 9.31s | 2.44s (no cold start) | **Fireworks** |
-| Warm Start | 3.53s | 2.04s | **Fireworks** |
-| Inference Time | 6.11s | 2.24s | **Fireworks** |
-| Cost per Call | $0.002658 (GPU time) | $0.012 (170 tokens) | **Modal** |
+| Metric | Modal + Llama 7B | Fireworks + Llama 3.1 8B On-Demand | Fireworks + Llama 3.1 8B Serverless | Winner |
+|--------|------------------|-------------------------------------|-------------------------------------|--------|
+| Cold Start | 9.31s | 0s | 0s | **Fireworks** |
+| Warm Start | 3.53s | 0s | 0.0s | **Fireworks** |
+| Inference Time | 6.11s | 2.04s | 2.03s | **Fireworks** |
+| Cost per Call | $0.000341 (GPU time) | $0.0000340000 (170 tokens) | TBD (but expensive) | **Unclear** |
 | Ease of Use | Complex (model management) | Simple (API calls) | **Fireworks** |
 
-### A Note on Chat-GPTModel Selection & Comparison Strategy 
+### A Note on Cost
+I was accidentally using Fireworks On-Demand instead of Fireworks Serverless offerings for deployment, which was much more expensive. Avoid my mistake!
+
+### A Note on Model Selection & Comparison Strategy 
 I compared the platforms with their different models (llama-7b for Modal because it's a non-gated model and llama-3.1-8b-instruct for Fireworks because 7b isn't available):
 - **Modal**: llama-7b 
 - **Fireworks**: llama-3.1-8b-instruct via Fireworks API
@@ -70,15 +73,17 @@ I compared the platforms with their different models (llama-7b for Modal because
 
 **Performance:**
 - **Fireworks dominates completely on Model init time**: 2.44s cold / 2.04s warm vs 9.31s cold / 3.53s warm for Modal (130x+ faster!)
-- **Fireworks has faster Inference time**: ~2.24s vs ~6.11s for Modal (2.7x faster!)
+- **Fireworks has faster Inference time**: ~2.04s vs ~6.11s for Modal (2.7x faster!)
 - **Modal has loading overhead**: Modal requires multiple mins for initial model loading (we do this once and cache), Fireworks has pre-loaded model (no loading time)
 
 **Cost:**
-- **Modal is significantly cheaper**: $0.002658 (GPU time) vs $0.012 (170 tokens) for Fireworks (6.7x cheaper!), AND Modal is technically free right now ($30 credit)
+- **Currently exploring this further**: It appears fireworks may be cheaper using serverless, which is different than what I intially thought. It is unclear if Modal is charging for cold start time, so I am trying to dif into that further. Modal is technically free right now ($30 credit)
 
 **Ease of Use:**
 - **Fireworks is much simpler**: Just API calls vs complex model management
 - **Modal requires significant setup**: Docker images, GPU configuration, model downloading/caching, reading through Modal documentation
 - **Fireworks abstracts complexity**: Pre-optimized models, instant deployment, no infrastructure management
 
-**Final Verdict**: Fireworks wins by a landslide in ease of use and performance. Modal is cheaper, has a free trial period, and is a better choice if you want to use your own code.
+**Final Verdict:** 
+
+Fireworks wins by a landslide in ease of use and performance. Modal has a free trial period, and is a better choice if you want to use your own code. Still exploring cost, but they appear to be somewhat on par for serverless options. 

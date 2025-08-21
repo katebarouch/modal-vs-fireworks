@@ -24,7 +24,7 @@ def generate_text(prompt, max_tokens=150):
     payload = {
 
         # copy and paste your model ID here
-        "model": "accounts/k8b/deployedModels/YOUR_MODEL_ID",
+        "model": "accounts/k8b/deployedModels/llama-v3p1-8b-instruct-zoobeb06",
     
         "max_tokens": max_tokens,
         "top_p": 1,
@@ -54,10 +54,11 @@ def generate_text(prompt, max_tokens=150):
     # Calculate timing metrics
     init_time = function_start - inference_start
     inference_time = inference_end - inference_start
+    total_time = inference_end - function_start
             
     # parse response
     response_data = response.json()
-        
+    
     # extract content and reasoning_content fields from response
     message = response_data['choices'][0]['message']
     if 'content' in message and message['content']:
@@ -83,12 +84,6 @@ def main():
     Test the Fireworks AI function with sample prompts.
     """
     print("Testing Fireworks AI LLM inference...")
-    
-    # Check for API key
-    if not os.getenv("FIREWORKS_API_KEY"):
-        print("Error: FIREWORKS_API_KEY environment variable not set")
-        print("Please set it with: export FIREWORKS_API_KEY='your_api_key'")
-        return
     
     # Test prompts
     prompt1 = "How many hours would it take to walk across the United States?"
@@ -116,9 +111,13 @@ def main():
     result = result2
     print(f"\nTokens used: {result['usage']['total_tokens']} ({result['usage']['prompt_tokens']} prompt + {result['usage']['completion_tokens']} completion)")
     
-    # Cost estimation (approximate rates for custom deployment)
-    estimated_cost = result['usage']['total_tokens'] * 0.00007  # Rough estimate
+    # Cost estimation (approximate rates for serverless deployment)
+    estimated_cost = result['usage']['total_tokens'] * (0.20 / 1_000_000)  # = total_tokens * 0.0000002  # Rough estimate based on $0.20 Per 1M Tokensfor this model(as of 2025-08-21)
     print(f"Estimated cost: ${estimated_cost:.4f}")
+
+    # Cost estimation (approximate rates for on-demand deployment)
+    estimated_cost = result['usage']['total_tokens'] * (0.20 / 1_000_000)  # = total_tokens * 0.0000002  # Rough estimate based on $0.20 Per 1M Tokensfor this model(as of 2025-08-21)
+    print(f"Estimated cost: ${estimated_cost:.10f}")
 
 if __name__ == "__main__":
     main()

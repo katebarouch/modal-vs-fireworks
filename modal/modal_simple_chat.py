@@ -152,7 +152,7 @@ def main():
     # Cost estimation for Modal GPU usage
     # A10G GPU costs $0.000306/second on Modal (source: https://modal.com/pricing)
     gpu_cost_per_second = 0.000306
-    estimated_gpu_cost = result2['total_time'] * gpu_cost_per_second
+    estimated_gpu_cost = result2['inference_time'] * gpu_cost_per_second
     print(f"Estimated GPU cost: ${estimated_gpu_cost:.6f}")
 
 if __name__ == "__main__":
