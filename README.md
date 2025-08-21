@@ -29,15 +29,14 @@ To compare two popular AI inference platforms by running the same simple LLM tas
 - Python 3.8+
 - API keys for both platforms:
   - Modal account and API key
-  - OpenAI API key
   - Fireworks AI API key
 
 ### Setup
 
 1. Clone this repository:
 ```bash
-git clone <your-repo-url>
-cd modal-vs-fireworks-comparison
+git clone https://github.com/katebarouch/modal-vs-fireworks.git
+cd modal-vs-fireworks
 ```
 
 2. Follow the setup instructions for each platform:
