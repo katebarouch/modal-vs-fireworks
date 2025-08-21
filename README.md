@@ -73,8 +73,8 @@ I compared the platforms with their different models (llama-7b for Modal because
 
 **Performance:**
 - **Fireworks dominates completely on Model init time**: 2.44s cold / 2.04s warm vs 9.31s cold / 3.53s warm for Modal (130x+ faster!)
-- **Fireworks dominates completely on Inference time**: ~2.24s vs ~6.11s for Modal (2.7x faster!)
-- **Model loading overhead**: Model requires 60s+ for initial model loading (we do this once and cache), Fireworks has pre-loaded model (no loading time)
+- **Fireworks has faster Inference time**: ~2.24s vs ~6.11s for Modal (2.7x faster!)
+- **Modal has loading overhead**: Modal requires multiple mins for initial model loading (we do this once and cache), Fireworks has pre-loaded model (no loading time)
 
 **Cost:**
 - **Modal is significantly cheaper**: $0.002658 (GPU time) vs $0.012 (170 tokens) for Fireworks (6.7x cheaper!), AND Modal is technically free right now ($30 credit)
